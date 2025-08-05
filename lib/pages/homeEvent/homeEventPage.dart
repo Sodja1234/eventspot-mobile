@@ -145,49 +145,70 @@ class _HomeEventPageState extends ConsumerState<HomeEventPage> {
             ),
             const SizedBox(height: 12),
             SizedBox(
-              height: 120, // Hauteur fixe
-              child: GridView.builder(
+              height: 100, // Hauteur reduite
+              child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 1, // Une seule ligne verticale
-                  mainAxisSpacing: 12, // Espacement entre les éléments
-                  childAspectRatio: 0.75, // Ratio largeur/hauteur des items
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: state.categories?.length ?? 0,
                 itemBuilder: (context, index) {
                   final cat = state.categories?[index];
-                  return cat != null
-                      ? GestureDetector(
-                    onTap: () {
-                      if (user == null) {
-                        context.go('/public/intro');
-                      } else {
-                        context.go('/event/${cat.id}');
-                      }
-                    },
-                    child: Container(
-                      width: 100, // Largeur fixe
-                      margin: const EdgeInsets.only(right: 8), // Marge à droite seulement
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey[300]!),
-                      ),
-                      child: Center(
-                        child: Text(
-                          cat.title ?? '',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                  if (cat == null) return const SizedBox.shrink();
+
+
+                  final color = Colors.primaries[index % Colors.primaries.length].withOpacity(0.2);
+                  final icon = Icons.category;
+
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: GestureDetector(
+                      onTap: () {
+                        if (user == null) {
+                          context.go('/public/intro');
+                        } else {
+                          context.go('/event/${cat.id}');
+                        }
+                      },
+                      child: Container(
+                        width: 120, // Largeur légèrement augmentée
+                        decoration: BoxDecoration(
+                          color: color,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.1),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              icon,
+                              size: 32,
+                              color: Colors.primaries[index % Colors.primaries.length],
+                            ),
+                            const SizedBox(height: 8),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              child: Text(
+                                cat.title ?? '',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[800],
+                                  fontSize: 14,
+                                ),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  )
-                      : const SizedBox.shrink();
+                  );
                 },
               ),
             ),
