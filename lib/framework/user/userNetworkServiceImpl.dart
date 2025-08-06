@@ -1,6 +1,8 @@
 
 import 'dart:convert';
 
+import 'package:odc_mobile_template/business/models/article/event.dart';
+
 import '../../business/models/user/authentication.dart';
 
 import '../../business/models/user/interet.dart';
@@ -176,6 +178,30 @@ class UserNetworkServiceImpl extends UserNetworkService {
       return false;
     }
   }
+
+  @override
+  Future<List<Event>> recupererFavEvents(String token) async {
+    var url = '$baseUrl/events/favorites';
+    var response = await httpUtils.getData(url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token'},
+    );
+
+    // Si response est un JSON encodé (String), décode-le d’abord
+    final jsonResponse = response is String ? jsonDecode(response) : response;
+
+    if (jsonResponse is Map<String, dynamic> && jsonResponse.containsKey('data')) {
+      List<dynamic> eventData = jsonResponse['data'];
+      print("les événements favori venant du backend : $eventData");
+      return eventData.map((event) => Event.fromJson(event)).toList();
+    } else {
+      throw Exception("Format de réponse inattendu lors de la récupération des événements");
+    }
+  }
+
+
 
 
 }

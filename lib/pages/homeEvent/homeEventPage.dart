@@ -29,6 +29,10 @@ class _HomeEventPageState extends ConsumerState<HomeEventPage> {
     final state = ref.watch(homeEventControllerProvider);
     final loginState = ref.watch(loginControlProvider);
     final user = loginState.user;
+    if (user?.token != null && (state.favEvents?.isEmpty ?? true)) {
+      ref.read(homeEventControllerProvider.notifier).loadFavoriteEvents(user!.token!);
+    }
+
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -213,6 +217,57 @@ class _HomeEventPageState extends ConsumerState<HomeEventPage> {
               ),
             ),
             const SizedBox(height: 24),
+
+
+            if (user != null && state.favEvents != null ) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "❤️ Événements favoris",
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {},
+                    child: const Text("Voir tout"),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 290, // Augmentation légère de la hauteur
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16), // Padding sur les côtés
+                  itemCount: state.favEvents?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    final event = state.favEvents![index];
+                    return Container(
+                      margin: const EdgeInsets.only(right: 16), // Espace entre les cartes
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: CarteEvenementFavHorizontal(event: event),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) => const SizedBox(width: 16), // Espacement entre les items
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+
           ],
         ),
       ),
